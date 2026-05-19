@@ -16,14 +16,12 @@ interface Props {
   initialText?: string;
   onStart: (words: Word[], direction: StudyDirection) => void;
   onImageExtract: () => void;
-  onSettings: () => void;
 }
 
 export default function WordRegistration({
   initialText = "",
   onStart,
   onImageExtract,
-  onSettings,
 }: Props) {
   const [text, setText] = useState(initialText);
   const [error, setError] = useState("");
@@ -92,13 +90,6 @@ export default function WordRegistration({
             <h1 className="text-3xl font-bold text-white">
               英単語フラッシュカード
             </h1>
-            <button
-              onClick={onSettings}
-              className="text-white/40 hover:text-white/80 transition-colors p-1"
-              title="設定"
-            >
-              ⚙️
-            </button>
           </div>
           <p className="text-purple-200 text-sm">
             重み付き反復学習で効率よく暗記

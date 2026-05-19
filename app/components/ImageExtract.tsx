@@ -2,7 +2,6 @@
 
 import { useState, useRef } from "react";
 
-const STORAGE_KEY = "gemini_api_key";
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
@@ -18,7 +17,6 @@ const PROMPT = `この画像から英単語と日本語訳のペアを全て抽�
 interface Props {
   onExtracted: (text: string) => void;
   onBack: () => void;
-  onNeedSettings: () => void;
 }
 
 function readFileAsBase64(file: File): Promise<string> {
@@ -30,7 +28,7 @@ function readFileAsBase64(file: File): Promise<string> {
   });
 }
 
-export default function ImageExtract({ onExtracted, onBack, onNeedSettings }: Props) {
+export default function ImageExtract({ onExtracted, onBack }: Props) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -65,9 +63,9 @@ export default function ImageExtract({ onExtracted, onBack, onNeedSettings }: Pr
   };
 
   const handleExtract = async () => {
-    const apiKey = localStorage.getItem(STORAGE_KEY)?.trim();
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY?.trim();
     if (!apiKey) {
-      onNeedSettings();
+      setError("APIキーが設定されていません。管理者にお問い合わせください。");
       return;
     }
     if (!imageFile) return;
@@ -99,7 +97,7 @@ export default function ImageExtract({ onExtracted, onBack, onNeedSettings }: Pr
         return;
       }
       if (res.status === 403 || res.status === 401) {
-        setError("APIキーが無効です。設定画面でAPIキーを確認してください。");
+        setError("APIキーが無効です。サーバー設定を確認してください。");
         return;
       }
       if (!res.ok) {

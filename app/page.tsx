@@ -5,7 +5,6 @@ import WordRegistration from "./components/WordRegistration";
 import StudyScreen from "./components/StudyScreen";
 import CompleteScreen from "./components/CompleteScreen";
 import ImageExtract from "./components/ImageExtract";
-import SettingsScreen from "./components/SettingsScreen";
 
 export interface Word {
   id: string;
@@ -17,14 +16,13 @@ export interface Word {
 
 export type StudyDirection = "en-to-ja" | "ja-to-en";
 
-type View = "registration" | "study" | "complete" | "imageExtract" | "settings";
+type View = "registration" | "study" | "complete" | "imageExtract";
 
 export default function Home() {
   const [view, setView] = useState<View>("registration");
   const [words, setWords] = useState<Word[]>([]);
   const [direction, setDirection] = useState<StudyDirection>("en-to-ja");
   const [extractedText, setExtractedText] = useState("");
-  const [settingsReturnTo, setSettingsReturnTo] = useState<View>("registration");
 
   const handleStart = useCallback((rawWords: Word[], dir: StudyDirection) => {
     setWords(rawWords);
@@ -66,21 +64,11 @@ export default function Home() {
     setView("registration");
   }, []);
 
-  const handleGoToSettings = useCallback((returnTo: View = "registration") => {
-    setSettingsReturnTo(returnTo);
-    setView("settings");
-  }, []);
-
-  if (view === "settings") {
-    return <SettingsScreen onBack={() => setView(settingsReturnTo)} />;
-  }
-
   if (view === "imageExtract") {
     return (
       <ImageExtract
         onExtracted={handleExtracted}
         onBack={() => setView("registration")}
-        onNeedSettings={() => handleGoToSettings("imageExtract")}
       />
     );
   }
@@ -92,7 +80,6 @@ export default function Home() {
         initialText={extractedText}
         onStart={handleStart}
         onImageExtract={() => setView("imageExtract")}
-        onSettings={() => handleGoToSettings("registration")}
       />
     );
   }
