@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 
 const GEMINI_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 const PROMPT = `この画像から英単語と日本語訳のペアを全て抽出してください。
 
