@@ -13,11 +13,19 @@ dog,犬
 elephant,ゾウ`;
 
 interface Props {
+  initialText?: string;
   onStart: (words: Word[], direction: StudyDirection) => void;
+  onImageExtract: () => void;
+  onSettings: () => void;
 }
 
-export default function WordRegistration({ onStart }: Props) {
-  const [text, setText] = useState("");
+export default function WordRegistration({
+  initialText = "",
+  onStart,
+  onImageExtract,
+  onSettings,
+}: Props) {
+  const [text, setText] = useState(initialText);
   const [error, setError] = useState("");
   const [direction, setDirection] = useState<StudyDirection>("en-to-ja");
 
@@ -77,14 +85,34 @@ export default function WordRegistration({ onStart }: Props) {
       <div className="w-full max-w-lg animate-fade-in">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3">📚</div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            英単語フラッシュカード
-          </h1>
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="text-5xl">📚</div>
+          </div>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <h1 className="text-3xl font-bold text-white">
+              英単語フラッシュカード
+            </h1>
+            <button
+              onClick={onSettings}
+              className="text-white/40 hover:text-white/80 transition-colors p-1"
+              title="設定"
+            >
+              ⚙️
+            </button>
+          </div>
           <p className="text-purple-200 text-sm">
             重み付き反復学習で効率よく暗記
           </p>
         </div>
+
+        {/* Image extract button */}
+        <button
+          onClick={onImageExtract}
+          className="w-full mb-4 py-3.5 bg-white/20 hover:bg-white/30 border border-white/30 text-white font-semibold rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all"
+        >
+          <span className="text-xl">📷</span>
+          画像から単語を読み取る
+        </button>
 
         {/* Card */}
         <div className="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-6">
@@ -187,7 +215,7 @@ export default function WordRegistration({ onStart }: Props) {
       </div>
 
       {/* Version */}
-      <p className="mt-8 text-white/30 text-xs">ver.1.2</p>
+      <p className="mt-8 text-white/30 text-xs">ver.1.3</p>
     </div>
   );
 }
