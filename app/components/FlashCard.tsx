@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from "react";
 import type { Word } from "../page";
+import type { StudyDirection } from "../page";
 
 interface Props {
   word: Word;
+  direction: StudyDirection;
   onAnswer: (result: "correct" | "wrong" | "unknown") => void;
 }
 
-export default function FlashCard({ word, onAnswer }: Props) {
+export default function FlashCard({ word, direction, onAnswer }: Props) {
   const [flipped, setFlipped] = useState(false);
   const [animating, setAnimating] = useState(false);
 
-  // Reset flip state when word changes
   useEffect(() => {
     setFlipped(false);
     setAnimating(false);
@@ -29,6 +30,13 @@ export default function FlashCard({ word, onAnswer }: Props) {
     onAnswer(result);
   };
 
+  const isEnToJa = direction === "en-to-ja";
+  const frontLabel = isEnToJa ? "English" : "日本語";
+  const backLabel = isEnToJa ? "日本語" : "English";
+  const frontText = isEnToJa ? word.english : word.japanese;
+  const backText = isEnToJa ? word.japanese : word.english;
+  const backSubText = isEnToJa ? word.english : word.japanese;
+
   return (
     <div className="flex flex-col items-center gap-6 w-full animate-slide-up">
       {/* Card */}
@@ -40,14 +48,14 @@ export default function FlashCard({ word, onAnswer }: Props) {
         aria-label={flipped ? "カード（めくり済み）" : "カードをタップしてめくる"}
       >
         <div className={`card-body ${flipped ? "flipped" : ""}`}>
-          {/* Front — English */}
+          {/* Front */}
           <div className="card-face">
             <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-xl flex flex-col items-center justify-center p-6 select-none">
               <p className="text-purple-200 text-xs font-semibold uppercase tracking-widest mb-4">
-                English
+                {frontLabel}
               </p>
               <p className="text-white text-4xl font-bold text-center break-words">
-                {word.english}
+                {frontText}
               </p>
               {!flipped && (
                 <p className="text-purple-300 text-xs mt-6 animate-pulse">
@@ -57,17 +65,17 @@ export default function FlashCard({ word, onAnswer }: Props) {
             </div>
           </div>
 
-          {/* Back — Japanese */}
+          {/* Back */}
           <div className="card-face card-back-face">
             <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl shadow-xl flex flex-col items-center justify-center p-6 select-none">
               <p className="text-emerald-100 text-xs font-semibold uppercase tracking-widest mb-4">
-                日本語
+                {backLabel}
               </p>
               <p className="text-white text-3xl font-bold text-center break-words">
-                {word.japanese}
+                {backText}
               </p>
               <p className="text-emerald-200 text-sm mt-3 opacity-70">
-                {word.english}
+                {backSubText}
               </p>
             </div>
           </div>

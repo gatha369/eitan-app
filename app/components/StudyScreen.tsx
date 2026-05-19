@@ -2,10 +2,12 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import type { Word } from "../page";
+import type { StudyDirection } from "../page";
 import FlashCard from "./FlashCard";
 
 interface Props {
   words: Word[];
+  direction: StudyDirection;
   onAnswer: (id: string, result: "correct" | "wrong" | "unknown") => void;
   onQuit: () => void;
 }
@@ -13,7 +15,6 @@ interface Props {
 function pickNext(words: Word[], excludeId?: string): Word | null {
   const active = words.filter((w) => !w.completed && w.id !== excludeId);
   if (active.length === 0) {
-    // If only the current word is left, allow it
     const fallback = words.find((w) => !w.completed);
     return fallback ?? null;
   }
@@ -27,14 +28,13 @@ function pickNext(words: Word[], excludeId?: string): Word | null {
   return active[active.length - 1];
 }
 
-export default function StudyScreen({ words, onAnswer, onQuit }: Props) {
+export default function StudyScreen({ words, direction, onAnswer, onQuit }: Props) {
   const [currentId, setCurrentId] = useState<string>(() => {
     const w = pickNext(words);
     return w ? w.id : "";
   });
   const [cardKey, setCardKey] = useState(0);
 
-  // Track when words change after an answer to advance to next card
   const prevWordsRef = useRef(words);
   useEffect(() => {
     if (prevWordsRef.current === words) return;
@@ -76,12 +76,9 @@ export default function StudyScreen({ words, onAnswer, onQuit }: Props) {
     <div className="min-h-screen flex flex-col p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 animate-fade-in">
-        <button
-          onClick={onQuit}
-          className="text-white/70 hover:text-white text-sm flex items-center gap-1 transition-colors"
-        >
-          ← 終了
-        </button>
+        <span className="text-white/50 text-xs px-2 py-1 rounded-lg bg-white/10">
+          {direction === "en-to-ja" ? "英語→日本語" : "日本語→英語"}
+        </span>
         <span className="text-white font-bold text-sm">
           {completedCount} / {total} 語 完了
         </span>
@@ -123,13 +120,24 @@ export default function StudyScreen({ words, onAnswer, onQuit }: Props) {
         <FlashCard
           key={cardKey}
           word={currentWord}
+          direction={direction}
           onAnswer={handleAnswer}
         />
       </div>
 
-      <p className="text-center text-white/40 text-xs mt-6">
-        重み付けにより間違えた単語は頻繁に出題されます
-      </p>
+      {/* Footer */}
+      <div className="mt-6 flex flex-col items-center gap-3">
+        <p className="text-center text-white/40 text-xs">
+          重み付けにより間違えた単語は頻繁に出題されます
+        </p>
+        <button
+          onClick={onQuit}
+          className="px-6 py-2.5 rounded-xl border border-white/30 text-white/70 hover:text-white hover:bg-white/10 active:scale-95 text-sm font-medium transition-all"
+        >
+          中止する
+        </button>
+        <p className="text-white/20 text-xs">ver.1.2</p>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Word } from "../page";
+import type { StudyDirection } from "../page";
 
 const MAX_WORDS = 200;
 
@@ -12,12 +13,13 @@ dog,犬
 elephant,ゾウ`;
 
 interface Props {
-  onStart: (words: Word[]) => void;
+  onStart: (words: Word[], direction: StudyDirection) => void;
 }
 
 export default function WordRegistration({ onStart }: Props) {
   const [text, setText] = useState("");
   const [error, setError] = useState("");
+  const [direction, setDirection] = useState<StudyDirection>("en-to-ja");
 
   const parse = (): Word[] | null => {
     const lines = text
@@ -57,7 +59,7 @@ export default function WordRegistration({ onStart }: Props) {
 
   const handleStart = () => {
     const words = parse();
-    if (words) onStart(words);
+    if (words) onStart(words, direction);
   };
 
   const handleExample = () => {
@@ -86,6 +88,33 @@ export default function WordRegistration({ onStart }: Props) {
 
         {/* Card */}
         <div className="bg-white/95 backdrop-blur rounded-2xl shadow-2xl p-6">
+          {/* Direction toggle */}
+          <div className="mb-5">
+            <p className="text-gray-700 font-semibold text-sm mb-2">出題方向</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDirection("en-to-ja")}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                  direction === "en-to-ja"
+                    ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                }`}
+              >
+                英語 → 日本語
+              </button>
+              <button
+                onClick={() => setDirection("ja-to-en")}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                  direction === "ja-to-en"
+                    ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                }`}
+              >
+                日本語 → 英語
+              </button>
+            </div>
+          </div>
+
           <div className="flex items-center justify-between mb-3">
             <label className="text-gray-700 font-semibold text-sm">
               単語リスト
@@ -156,6 +185,9 @@ export default function WordRegistration({ onStart }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Version */}
+      <p className="mt-8 text-white/30 text-xs">ver.1.2</p>
     </div>
   );
 }

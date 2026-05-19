@@ -51,6 +51,8 @@ export default function CompleteScreen({ total, onRestart, onRetry }: Props) {
           </button>
         </div>
       </div>
+
+      <p className="mt-8 text-white/30 text-xs">ver.1.2</p>
     </div>
   );
 }

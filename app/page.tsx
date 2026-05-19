@@ -13,14 +13,18 @@ export interface Word {
   completed: boolean;
 }
 
+export type StudyDirection = "en-to-ja" | "ja-to-en";
+
 type View = "registration" | "study" | "complete";
 
 export default function Home() {
   const [view, setView] = useState<View>("registration");
   const [words, setWords] = useState<Word[]>([]);
+  const [direction, setDirection] = useState<StudyDirection>("en-to-ja");
 
-  const handleStart = useCallback((rawWords: Word[]) => {
+  const handleStart = useCallback((rawWords: Word[], dir: StudyDirection) => {
     setWords(rawWords);
+    setDirection(dir);
     setView("study");
   }, []);
 
@@ -77,6 +81,11 @@ export default function Home() {
   }
 
   return (
-    <StudyScreen words={words} onAnswer={handleAnswer} onQuit={handleRestart} />
+    <StudyScreen
+      words={words}
+      direction={direction}
+      onAnswer={handleAnswer}
+      onQuit={handleRestart}
+    />
   );
 }
