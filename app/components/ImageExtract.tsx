@@ -252,7 +252,7 @@ export default function ImageExtract({ onExtracted, onBack, onNeedSettings }: Pr
         >
           ← タイトルに戻る
         </button>
-        <p className="mt-2 text-center text-white/20 text-xs">ver.1.3</p>
+        <p className="mt-2 text-center text-white/20 text-xs">ver.2.0</p>
       </div>
     </div>
   );

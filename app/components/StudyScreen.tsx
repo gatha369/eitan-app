@@ -136,7 +136,7 @@ export default function StudyScreen({ words, direction, onAnswer, onQuit }: Prop
         >
           中止する
         </button>
-        <p className="text-white/20 text-xs">ver.1.3</p>
+        <p className="text-white/20 text-xs">ver.2.0</p>
       </div>
     </div>
   );

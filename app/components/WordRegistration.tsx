@@ -215,7 +215,7 @@ export default function WordRegistration({
       </div>
 
       {/* Version */}
-      <p className="mt-8 text-white/30 text-xs">ver.1.3</p>
+      <p className="mt-8 text-white/30 text-xs">ver.2.0</p>
     </div>
   );
 }

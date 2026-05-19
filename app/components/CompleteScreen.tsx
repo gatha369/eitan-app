@@ -52,7 +52,7 @@ export default function CompleteScreen({ total, onRestart, onRetry }: Props) {
         </div>
       </div>
 
-      <p className="mt-8 text-white/30 text-xs">ver.1.3</p>
+      <p className="mt-8 text-white/30 text-xs">ver.2.0</p>
     </div>
   );
 }
