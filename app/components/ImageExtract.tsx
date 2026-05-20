@@ -2,17 +2,6 @@
 
 import { useState, useRef } from "react";
 
-const GEMINI_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-
-const PROMPT = `この画像から英単語と日本語訳のペアを全て抽出してください。
-
-以下の形式のみ出力してください（余計な説明・見出し・番号は不要です）：
-英単語,日本語訳
-英単語,日本語訳
-
-・1行に1ペア、コンマ（,）区切り
-・日本語訳が画像にない場合は文脈から推測して補完してください`;
 
 interface Props {
   onExtracted: (text: string) => void;
@@ -63,11 +52,6 @@ export default function ImageExtract({ onExtracted, onBack }: Props) {
   };
 
   const handleExtract = async () => {
-    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY?.trim();
-    if (!apiKey) {
-      setError("APIキーが設定されていません。管理者にお問い合わせください。");
-      return;
-    }
     if (!imageFile) return;
 
     setLoading(true);
@@ -77,52 +61,20 @@ export default function ImageExtract({ onExtracted, onBack }: Props) {
     try {
       const base64 = await readFileAsBase64(imageFile);
 
-      const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+      const res = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { inline_data: { mime_type: imageFile.type, data: base64 } },
-                { text: PROMPT },
-              ],
-            },
-          ],
-        }),
+        body: JSON.stringify({ base64, mimeType: imageFile.type }),
       });
 
-      if (res.status === 429) {
-        setError("本日の無料枠が上限に達しました。明日また試してください。");
-        return;
-      }
-      if (res.status === 403 || res.status === 401) {
-        setError("APIキーが無効です。サーバー設定を確認してください。");
-        return;
-      }
+      const data = await res.json() as { text?: string; error?: string };
+
       if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        const msg = (errJson as { error?: { message?: string } })?.error?.message ?? "不明なエラー";
-        setError(`APIエラー（${res.status}）: ${msg}`);
+        setError(data.error ?? "不明なエラーが発生しました。");
         return;
       }
 
-      const data = await res.json() as {
-        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-      };
-      const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-
-      const filtered = raw
-        .split("\n")
-        .map((l) => l.trim())
-        .filter((l) => l.includes(",") && !l.startsWith("```") && !l.startsWith("#"))
-        .join("\n");
-
-      if (!filtered) {
-        setError("単語を抽出できませんでした。別の画像を試してください。");
-        return;
-      }
-      setResult(filtered);
+      setResult(data.text ?? "");
     } catch {
       setError("通信エラーが発生しました。ネットワーク接続を確認してください。");
     } finally {
